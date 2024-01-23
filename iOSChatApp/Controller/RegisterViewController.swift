@@ -78,45 +78,76 @@ class RegisterViewController: UIViewController {
     @IBAction func registerButtonPressed(_ sender: UIButton) {
         
         print("Register button pressed !!!! ")
-        //performSegue(withIdentifier: "GoToLogin", sender: self)
         guard let email = emailTextField.text,
-              let password = passwordTextField.text,
-              uploadImageURL != nil
+              let password = passwordTextField.text
+             // uploadImageURL != nil
         else{
             ErrorMessage()
             return
         }
         Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
-            
+        
             if let er = error {
                 self.ErrorMessage()
             } else {
-                self.performSegue(withIdentifier: "GoToLogin", sender: self)
-                self.uploadFile(fileUrl: (self.uploadImageURL)!)
+//                self.uploadFile(fileUrl: (self.uploadImageURL)!)
+                //let fileExtension = 
+                let storageRef = Storage.storage().reference().child("\(email).png")
+                if  let uploadData = self.userPhotoImageView.image!.pngData() {
+                    storageRef.putData(uploadData, metadata: nil) { (metadata, error) in
+                        if error != nil {
+                            print(error)
+                            return
+                        }
+                        storageRef.downloadURL { (url, error) in
+                                      guard let downloadURL = url else {
+                                          return
+                                      }
+                                      print("DOWNLOAD URL IS :",downloadURL)
+                            
+                                  }
+                        print(metadata)
+                    }
+                }
+                                self.performSegue(withIdentifier: "GoToLogin", sender: self)
+
             }
         }
     }
     
+
+    
     func uploadFile(fileUrl: URL){
         
-        let fileExtension = fileUrl.pathExtension
-        let fileName = "profilePicture_\(emailTextField.text ?? "")\(fileExtension)"
+        //        let fileExtension = fileUrl.pathExtension
+        //        let fileName = "profilePicture_\(emailTextField.text ?? "")\(fileExtension)"
+        //
+        //        print("File extension is  ================= ",fileExtension)
+        //        let metadata = StorageMetadata()
+        //        let riversRef = Storage.storage().reference().child(fileName)
+        //        metadata.contentType = "image/jpeg"
+        //        let uploadTask = riversRef.putFile(from: fileUrl, metadata: metadata) { metadata, error in
+        //            guard let metadata = metadata else {
+        //                return
+        //            }
+        //
+        //            let size = metadata.size
+        //            riversRef.downloadURL { (url, error) in
+        //                guard let downloadURL = url else {
+        //                    return
+        //                }
+        //                print("DOWNLOAD URL IS :",downloadURL)
+        //            }
+        //        }
         
-        print("File extension is  ================= ",fileExtension)
-        let metadata = StorageMetadata()
-        let riversRef = Storage.storage().reference().child(fileName)
-        metadata.contentType = "image/jpeg"
-        let uploadTask = riversRef.putFile(from: fileUrl, metadata: metadata) { metadata, error in
-            guard let metadata = metadata else {
-                return
-            }
-           
-            let size = metadata.size
-            riversRef.downloadURL { (url, error) in
-                guard let downloadURL = url else {
+        let storageRef = Storage.storage().reference()
+        if  let uploadData = userPhotoImageView.image!.pngData() {
+            storageRef.putData(uploadData, metadata: nil) { (metadata, error) in
+                if error != nil {
+                    print(error)
                     return
                 }
-                print("DOWNLOAD URL IS :",downloadURL)
+                print(metadata)
             }
         }
     }
@@ -161,7 +192,7 @@ extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationC
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
 //        picker.dismiss(animated: true, completion: nil)
-//    
+//
 //        guard let selectedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
 //            return
 //        }
@@ -170,18 +201,27 @@ extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationC
 //        uploadImageURL = info[UIImagePickerController.InfoKey.imageURL] as? URL
 //        print("uploadURL IS :::::::::::",uploadImageURL)
         
-        guard let image = info[.editedImage] as? UIImage else { return }
-
-
-        self.userPhotoImageView.image = image
-        let imageName = UUID().uuidString
-        let imagePath = getDocumentsDirectory().appendingPathComponent(imageName)
-
-        if let jpegData = image.jpegData(compressionQuality: 0.8) {
-            try? jpegData.write(to: imagePath)
+        var selectedImageFromUIPicker : UIImage?
+        if  let editedImg = info[.editedImage] as? UIImage  {
+            
+            selectedImageFromUIPicker = editedImg
+        } else if let originalImg = info[.originalImage] as? UIImage {
+            selectedImageFromUIPicker = originalImg
         }
-            print(imagePath)
-        uploadImageURL = imagePath
+        
+        if let selectedImage = selectedImageFromUIPicker {
+            userPhotoImageView.image = selectedImage
+        }
+//        let imageName = UUID().uuidString
+//        let imagePath = getDocumentsDirectory().appendingPathComponent(imageName)
+//
+//        if let jpegData = image.jpegData(compressionQuality: 0.8) {
+//            try? jpegData.write(to: imagePath)
+//        }
+//            print("Image path is =================",imagePath)
+//        uploadImageURL = imagePath
+//        print("imageURL IS ",uploadImageURL)
+
         dismiss(animated: true)
     }
 

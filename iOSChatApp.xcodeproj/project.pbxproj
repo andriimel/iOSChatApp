@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		596375DD2B5DF04E0023A878 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 596375DC2B5DF04E0023A878 /* Helper.swift */; };
 		59A5723C2B5AE38E000C0262 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A5723B2B5AE38E000C0262 /* AppDelegate.swift */; };
 		59A5723E2B5AE38E000C0262 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A5723D2B5AE38E000C0262 /* SceneDelegate.swift */; };
 		59A572402B5AE38E000C0262 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59A5723F2B5AE38E000C0262 /* WelcomeViewController.swift */; };
@@ -69,6 +70,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		596375DC2B5DF04E0023A878 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		59A572382B5AE38E000C0262 /* iOSChatApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSChatApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		59A5723B2B5AE38E000C0262 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		59A5723D2B5AE38E000C0262 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -200,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				59A572BE2B5AEACA000C0262 /* MessageModel.swift */,
+				596375DC2B5DF04E0023A878 /* Helper.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -334,6 +337,7 @@
 				59A5723E2B5AE38E000C0262 /* SceneDelegate.swift in Sources */,
 				59A572BF2B5AEACA000C0262 /* MessageModel.swift in Sources */,
 				59A572532B5AE451000C0262 /* LogInViewController.swift in Sources */,
+				596375DD2B5DF04E0023A878 /* Helper.swift in Sources */,
 				59A572552B5AE460000C0262 /* ChatViewController.swift in Sources */,
 				59A572512B5AE444000C0262 /* RegisterViewController.swift in Sources */,
 				59A5725A2B5AE761000C0262 /* MessageCell.swift in Sources */,

@@ -9,7 +9,6 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
 import FirebaseStorage
-
 // ...
       
 class LoginViewController: UIViewController {
@@ -62,7 +61,6 @@ class LoginViewController: UIViewController {
         
         userPhotoImageView.image = UIImage(systemName: "person")
 
-        
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Register", style: .done, target: self, action: #selector(registerButtonPressed))
     }
 

@@ -10,11 +10,14 @@ import FirebaseCore
 import FirebaseFirestore
 import FirebaseAuth
 import FirebaseStorage
+import IQKeyboardManagerSwift
 class ChatViewController:UIViewController {
     
     var messages: [MessageModel] = []
     let dataBase = Firestore.firestore()
-    
+    let imageCache = NSCache<NSString,AnyObject>()
+
+    @IBOutlet weak var messageBubbleView: UIView!
     @IBOutlet weak var chatTableView: UITableView!
     @IBOutlet weak var messageTextField: UITextField!
     
@@ -23,7 +26,7 @@ class ChatViewController:UIViewController {
         super.viewDidLoad()
         chatTableView.dataSource = self
         chatTableView.delegate  = self
-        messageTextField.delegate = self
+       // messageTextField.delegate = self
         
         navigationItem.hidesBackButton = true
         chatTableView.register(MessageCell.nib(), forCellReuseIdentifier: MessageCell.identifier)
@@ -103,15 +106,28 @@ class ChatViewController:UIViewController {
     }
     
     func downloadProfilePicture(withPath path:String, image:UIImageView)  {
-        let pathReference = Storage.storage().reference(withPath: "profilePicture_\(path)")
+        
+        if let catchedImage = imageCache.object(forKey: path as NSString) as? UIImage{
+            image.image = catchedImage
+            return
+        }
+        
+        let pathReference = Storage.storage().reference(withPath: "\(path).png")
         pathReference.downloadURL { url, error in
-            pathReference.getData(maxSize: 1 * 1024 * 1024) { data, error in
+            print("URL IS !!!!!!!!!!!!!!!! ============= ",url)
+            pathReference.getData(maxSize: 1 * 2048 * 2048) { data, error in
                 if let error = error {
                     print ("WTFBRO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", error)
                 } else {
                     // Data for "images/island.jpg" is returned
-                    let uploadImage = UIImage(data: data!)
-                    image.image = uploadImage
+                  
+                    DispatchQueue.main.async {
+                        
+                        if   let uploadImage = UIImage(data: data!) {
+                            self.imageCache.setObject(uploadImage, forKey: path as NSString)
+                            image.image = uploadImage
+                        }
+                    }
                 }
             }
         }
@@ -122,6 +138,7 @@ class ChatViewController:UIViewController {
 @available(iOS 15.0, *)
 extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+
         return messages.count
     }
     
@@ -133,13 +150,14 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
         as! MessageCell
         
         if Auth.auth().currentUser?.email == message.sender  {
-            downloadProfilePicture(withPath: message.sender, image: cell.rightImageView)
+            
+            self.downloadProfilePicture(withPath: message.sender, image: cell.rightImageView)
             cell.leftImageView.isHidden = true
             cell.rightImageView.isHidden = false
             cell.messageBubble.backgroundColor = .systemTeal
             
         } else {
-            downloadProfilePicture(withPath: message.sender, image: cell.leftImageView)
+            self.downloadProfilePicture(withPath: message.sender, image: cell.leftImageView)
             cell.leftImageView.isHidden = false
             cell.rightImageView.isHidden = true
             cell.messageBubble.backgroundColor = UIColor.systemMint
@@ -149,9 +167,17 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension ChatViewController: UITextFieldDelegate {
-    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-        print ("Keyboard is appear !!!!! ")
-        return true
-    }
-}
+//extension ChatViewController: UITextFieldDelegate {
+//    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+//        chatTableView.frame = CGRect(x: 0, y: 85, width: 393, height: 400)
+//        messageBubbleView.frame = CGRect(x: 0, y: 450, width: messageBubbleView.bounds.width, height: messageBubbleView.bounds.height)
+//        view.bringSubviewToFront(messageBubbleView)
+//        return true
+//    }
+//    
+//    func textFieldDidEndEditing(_ textField: UITextField) {
+//        chatTableView.frame = CGRect(x: 0, y: 85, width: 393, height: 686)
+//        messageBubbleView.frame = CGRect(x: 0, y: 769, width: messageBubbleView.bounds.width, height: messageBubbleView.bounds.height)
+//        view.bringSubviewToFront(messageBubbleView)
+//    }
+//}
